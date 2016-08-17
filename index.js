@@ -1,15 +1,19 @@
 /*
-  Logger API for logging things
-*/
+ * Logger API for logging things
+ */
 const fs = require('fs')
 const colour = require('colour')
 
-
+/*
+ * Environment setup
+ */
 const DEBUG_LVL = process.env.DEBUG_LVL || 0
 const USER = process.env.USER || ''
 const LOGFILE = process.env.LOGFILE || 'logs.txt'
 
-
+/*
+ * Logger helpers
+ */
 const logType = (type) =>
   type == 1 ? 'INFO ' :
   type == 2 ? 'WARN ' :
@@ -25,7 +29,9 @@ const printLog = (msg, lvl, code) => {
 }
 
 const printErr = (err) => {
-  if (err) console.log(err)
+  if (err) {
+    console.log(err)
+  }
 }
 
 const appendLog = (msg, lvl) => {
@@ -34,6 +40,9 @@ const appendLog = (msg, lvl) => {
   }
 }
 
+/*
+  Logger exports
+*/
 const INFO = (msg) => printLog(msg, 1, 'blue')
 const WARN = (msg) => printLog(msg, 2, 'red')
 const DEBUG = (msg) => printLog(msg, 3, 'yellow')
