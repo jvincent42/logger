@@ -1,5 +1,5 @@
 ## Logger JS
-Simple JS module for logging things
+Simple node JS module for logging things
 
 Use 3 environment variables:
 - `USER` : display USER in log entry
