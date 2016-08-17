@@ -5,6 +5,11 @@ const fs = require('fs')
 const colour = require('colour')
 
 /*
+ * F Helpers
+ */
+const identity = x => x
+
+/*
  * Environment setup
  */
 const DEBUG_LVL = process.env.DEBUG_LVL || 0
@@ -51,11 +56,37 @@ const LOG_INFO = (msg) => appendLog(msg, 1)
 const LOG_WARN = (msg) => appendLog(msg, 2)
 const LOG_DEBUG = (msg) => appendLog(msg, 3)
 
+/*
+ * Log API
+ */
+const getLogs = () => {
+  const logFileContent = fs.existsSync(LOGFILE) ? fs.readFileSync(LOGFILE) : undefined
+  return logFileContent ? logFileContent.toString().split('\n').filter(identity) : logFileContent
+}
+
+const entryIs = (lvl) => (entry) => {
+  const matches = entry.match(/(.*?)\[/)
+  return matches ? matches[1] === logType(lvl) : false
+}
+
+const getLogsOf = (lvl) => {
+  const logs = getLogs()
+  return logs ? logs.filter(entryIs(lvl)) : []
+}
+
+const getInfos = () => getLogsOf(1)
+const getWarns = () => getLogsOf(2)
+const getDebugs = () => getLogsOf(3)
+
 module.exports = {
   INFO: INFO,
   WARN: WARN,
   DEBUG: DEBUG,
   LOG_INFO: LOG_INFO,
   LOG_WARN: LOG_WARN,
-  LOG_DEBUG: LOG_DEBUG
+  LOG_DEBUG: LOG_DEBUG,
+  getLogs: getLogs,
+  getInfos: getInfos,
+  getWarns: getWarns,
+  getDebugs: getDebugs,
 }
