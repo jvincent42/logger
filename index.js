@@ -30,7 +30,7 @@ const printErr = (err) => {
 
 const appendLog = (msg, lvl) => {
   if (DEBUG_LVL >= lvl) {
-    fs.appendFile(LOGFILE, formatNow(msg + '\n'), printErr)
+    fs.appendFile(LOGFILE, formatNow(msg + '\n', lvl), printErr)
   }
 }
 
