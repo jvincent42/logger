@@ -25,11 +25,11 @@ const logType = (type) =>
   type == 3 ? 'DEBUG' :
   ''
 
-const formatNow = (msg, lvl) => logType(lvl) + '[' + (new Date()).toUTCString() + '][' + USER + '] ' + msg
+const formatNow = (msg, user, lvl) => logType(lvl) + '[' + (new Date()).toUTCString() + '][' + user + '] ' + msg
 
 const printLog = (msg, lvl, code) => {
   if (DEBUG_LVL >= lvl) {
-    console.log(colour[code].apply(1, [formatNow(msg, lvl)]))
+    console.log(colour[code].apply(1, [formatNow(msg, USER, lvl)]))
   }
 }
 
@@ -41,7 +41,7 @@ const printErr = (err) => {
 
 const appendLog = (msg, lvl) => {
   if (DEBUG_LVL >= lvl) {
-    fs.appendFile(LOGFILE, formatNow(msg + '\n', lvl), printErr)
+    fs.appendFile(LOGFILE, formatNow(msg + '\n', USER, lvl), printErr)
   }
 }
 
@@ -78,6 +78,28 @@ const getInfos = () => getLogsOf(1)
 const getWarns = () => getLogsOf(2)
 const getDebugs = () => getLogsOf(3)
 
+/*
+ * NetLogger
+ */
+const net = require('net')
+
+function NetLogger(users) {
+  this.users = users
+  this.connections = Object.keys(users).reduce((acc, user) => (
+    acc[user] = net.connect(...users[user]), acc
+  ), {})
+}
+NetLogger.prototype.INFO = function(username, message) {
+  const user = this.connections[username]
+  if (!user) return console.log('Error: No such user.')
+  user.write(formatNow(message + '\n', username, 1))
+}
+
+NetLogger.prototype.stop = function() {
+  const connections = this.connections
+  Object.keys(connections).forEach(connection => connections[connection].end())
+}
+
 module.exports = {
   INFO: INFO,
   WARN: WARN,
@@ -89,4 +111,5 @@ module.exports = {
   getInfos: getInfos,
   getWarns: getWarns,
   getDebugs: getDebugs,
+  NetLogger: NetLogger,
 }
